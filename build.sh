@@ -18,9 +18,9 @@ echo $SCRIPT_DIR
 ZMK_DIR="$SCRIPT_DIR/.zmk"
 FIRMWARE_DIR="$SCRIPT_DIR/firmware"
 
-BOARD="nice_nano_v2"
-LEFT_SHIELDS="sofle_left nice_oled"
-RIGHT_SHIELDS="sofle_right nice_oled"
+BOARD="nice_nano"
+LEFT_SHIELDS="kyria_left nice_view_adapter nice_view_custom"
+RIGHT_SHIELDS="kyria_right nice_view_adapter nice_view_custom"
 
 # Colors
 RED='\033[0;31m'
@@ -68,8 +68,8 @@ do_setup() {
 
     mkdir -p "$ZMK_DIR"
     cd "$ZMK_DIR"
-    cp "$SCRIPT_DIR/build.yaml" ./
     cp -r "$SCRIPT_DIR/config" ./
+    cp "$SCRIPT_DIR/build.yaml" ./
     info "Initializing west workspace from zmk-config manifest..."
     west init -l "$ZMK_DIR/config"
     west update
@@ -92,6 +92,10 @@ build_side() {
     info "Building ${side} half (board=${BOARD}, shields=\"${shields}\")..."
 
     cd "$ZMK_DIR"
+    cp -r "$SCRIPT_DIR/config" ./
+    cp "$SCRIPT_DIR/build.yaml" ./
+    cp "$SCRIPT_DIR/zephyr/module.yml" ./zephyr/module.yml
+
 
     west build -s zmk/app -p -b "$BOARD" -d "build/${side}" -- \
         -DSHIELD="${shields}" \
