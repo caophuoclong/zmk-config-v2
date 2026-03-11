@@ -19,8 +19,8 @@ ZMK_DIR="$SCRIPT_DIR/.zmk"
 FIRMWARE_DIR="$SCRIPT_DIR/firmware"
 
 BOARD="nice_nano"
-LEFT_SHIELDS="kyria_left nice_view_adapter nice_view_custom"
-RIGHT_SHIELDS="kyria_right nice_view_adapter nice_view_custom"
+LEFT_SHIELDS="kyria_left nice_view_adapter nice_view_gem"
+RIGHT_SHIELDS="kyria_right nice_view_adapter nice_view_gem"
 
 # Colors
 RED='\033[0;31m'
