@@ -18,9 +18,9 @@ echo $SCRIPT_DIR
 ZMK_DIR="$SCRIPT_DIR/.zmk"
 FIRMWARE_DIR="$SCRIPT_DIR/firmware"
 
-BOARD="nice_nano"
-LEFT_SHIELDS="kyria_left nice_view_adapter nice_view_gem"
-RIGHT_SHIELDS="kyria_right nice_view_adapter nice_view_gem"
+BOARD="nice_nano//zmk"
+LEFT_SHIELDS="sofle_left nice_oled"
+RIGHT_SHIELDS="sofle_right nice_oled"
 
 # Colors
 RED='\033[0;31m'
@@ -33,6 +33,14 @@ info()  { echo -e "${CYAN}[INFO]${NC}  $*"; }
 ok()    { echo -e "${GREEN}[OK]${NC}    $*"; }
 warn()  { echo -e "${YELLOW}[WARN]${NC}  $*"; }
 err()   { echo -e "${RED}[ERROR]${NC} $*" >&2; }
+
+west_python() {
+    local west_bin west_shebang
+
+    west_bin="$(command -v west)"
+    west_shebang="$(head -n 1 "$west_bin")"
+    echo "${west_shebang#\#!}"
+}
 
 # ── Check prerequisites ─────────────────────────────────────────────────
 check_deps() {
@@ -57,16 +65,18 @@ check_deps() {
 
 # ── First-time setup ────────────────────────────────────────────────────
 do_setup() {
+    local west_py
+
     info "Setting up ZMK build environment..."
     check_deps
+    west_py="$(west_python)"
 
-    if [[ -d "$ZMK_DIR" ]]; then
-        warn "$ZMK_DIR already exists. Remove it first if you want a fresh setup."
-        warn "  rm -rf $ZMK_DIR"
-        exit 1
-    fi
+    # if [[ -d "$ZMK_DIR" ]]; then
+    #     warn "$ZMK_DIR already exists. Remove it first if you want a fresh setup."
+    #     warn "  rm -rf $ZMK_DIR"
+    #     exit 1
+    # fi
 
-    mkdir -p "$ZMK_DIR"
     cd "$ZMK_DIR"
     cp -r "$SCRIPT_DIR/config" ./
     cp "$SCRIPT_DIR/build.yaml" ./
@@ -76,7 +86,8 @@ do_setup() {
 
     info "Installing Zephyr SDK requirements..."
     cp "$SCRIPT_DIR/zephyr/module.yml" ./
-    pip3 install -r ./zephyr/scripts/requirements.txt
+    "$west_py" -m pip install -r ./zephyr/scripts/requirements.txt protobuf grpcio-tools 'setuptools<81'
+    python3 -m pip install protobuf grpcio-tools 'setuptools<81'
 
     info "Exporting Zephyr CMake package..."
     west zephyr-export
